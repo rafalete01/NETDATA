@@ -1,66 +1,77 @@
-# Instalación de Netdata con APT
+# Cómo instalar Netdata en Ubuntu 22.04
 
-## Introducción
-Netdata es una herramienta de monitoreo en tiempo real para sistemas Linux. Permite visualizar métricas del sistema con una interfaz web intuitiva.
+Netdata es una herramienta de monitoreo en tiempo real de código abierto para servidores. Recopila datos en tiempo real como el uso de la CPU, RAM, carga, uso de SWAP, ancho de banda, uso del disco, etc.
 
-Este documento describe cómo instalar Netdata en distribuciones basadas en Debian y Ubuntu utilizando `apt`.
-
-## Requisitos previos
-Asegúrate de que tu sistema esté actualizado antes de la instalación:
+## Actualizar el servidor
+Actualicemos el servidor usando el siguiente comando:
 
 ```bash
-sudo apt update && sudo apt upgrade -y
+sudo apt update -y
+sudo apt upgrade -y
 ```
 
-## Instalación de Netdata
+## Descargar el paquete de Netdata
+Instala Netdata en el servidor utilizando el siguiente comando:
 
-1. **Añadir el repositorio de Netdata:**
-
-   ```bash
-   sudo apt install -y netdata
-   ```
-
-2. **Habilitar y arrancar el servicio:**
-
-   ```bash
-   sudo systemctl enable netdata
-   sudo systemctl start netdata
-   ```
-
-3. **Verificar el estado del servicio:**
-
-   ```bash
-   systemctl status netdata
-   ```
-
-## Acceder a la interfaz web
-Por defecto, Netdata se ejecuta en el puerto `19999`. Puedes acceder a la interfaz web desde tu navegador ingresando:
-
-```
-http://localhost:19999/
+```bash
+sudo apt install netdata -y
 ```
 
-Si deseas acceder desde otro dispositivo, usa la dirección IP del servidor en lugar de `localhost`.
+La opción `-y` se usa para confirmar automáticamente la instalación sin necesidad de intervención manual.
 
-## Configuración adicional
-Para configurar Netdata, puedes editar su archivo de configuración:
+## Configuración de Netdata
+Es necesario realizar un pequeño cambio en el archivo de configuración para que el panel de control esté disponible en una IP pública.
+
+Si solo lo usarás localmente, no es necesario realizar este cambio.
+
+Abre el archivo de configuración:
 
 ```bash
 sudo nano /etc/netdata/netdata.conf
 ```
 
-Después de realizar cambios, reinicia Netdata:
+El archivo de configuración se verá así:
+
+```ini
+[global]
+    run as user = netdata
+    web files owner = root
+    web files group = root
+    # Netdata no está diseñado para ser expuesto a redes potencialmente hostiles
+    # Ver https://github.com/netdata/netdata/issues/164
+    bind socket to IP = 127.0.0.1
+```
+
+Por defecto, `bind socket to IP` está configurado en `127.0.0.1`. Para acceder al panel de control usando la dirección IP del servidor, reemplaza `127.0.0.1` con la dirección IP de tu servidor.
+
+```ini
+[global]
+    run as user = netdata
+    web files owner = root
+    web files group = root
+    # Netdata no está diseñado para ser expuesto a redes potencialmente hostiles
+    # Ver https://github.com/netdata/netdata/issues/164
+    bind socket to IP = <Introduce tu dirección IP aquí>
+```
+
+Guarda el archivo y reinicia el servicio de Netdata con el siguiente comando:
 
 ```bash
 sudo systemctl restart netdata
 ```
 
-## Desinstalar Netdata
-Si necesitas eliminar Netdata, ejecuta:
+## Configuración del firewall
+Netdata escucha en el puerto `19999` por defecto. Habilita este puerto en el firewall para poder acceder al panel desde el navegador:
 
 ```bash
-sudo apt remove --purge netdata -y
+sudo ufw allow 19999
 ```
 
-## Conclusión
-Ahora tienes Netdata instalado y funcionando en tu sistema. Puedes usarlo para monitorear métricas del sistema en tiempo real y optimizar el rendimiento de tu servidor.
+## Panel de control de Netdata
+Ingresa la siguiente URL en tu navegador para acceder al panel de control de Netdata. Por defecto, Netdata funciona en el puerto `19999`.
+
+```
+http://<Introduce tu dirección IP aquí>:19999/
+```
+
+El panel de control se verá como se muestra a continuación.
