@@ -97,4 +97,7 @@ GRANT USAGE, REPLICATION CLIENT, PROCESS, SELECT ON . TO 'netdata'@'%';
 FLUSH PRIVILEGES; 
 ```
 # Verificamos la conectividad
+
+Podemos observar que podemos monitorear el docker de mysql
+
 ![Descripción de la imagen](netdata.png)
