@@ -97,4 +97,4 @@ GRANT USAGE, REPLICATION CLIENT, PROCESS, SELECT ON . TO 'netdata'@'%';
 FLUSH PRIVILEGES; 
 ```
 # Verificamos la conectividad
-![Descripción de la imagen](/images/netdata.jpg)
+![Descripción de la imagen](netdata.png)
